@@ -1,4 +1,3 @@
-
 Global / excludeLintKeys ++= Set(idePackagePrefix, mainClass)
 
 ThisBuild / version := "0.1.0-SNAPSHOT"
