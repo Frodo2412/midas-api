@@ -13,7 +13,8 @@ lazy val root = (project in file("."))
     idePackagePrefix := Some("com.principate.midas"),
     mainClass        := Some("com.principate.midas.Main"),
     libraryDependencies ++= Dependencies.common ++ Seq(
-      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13"
+      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server"     % "1.10.13",
+      "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % "1.10.13"
     )
   )
   .dependsOn(lib)
