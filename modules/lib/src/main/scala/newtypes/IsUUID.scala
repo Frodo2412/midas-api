@@ -12,7 +12,7 @@ trait IsUUID[A]:
 end IsUUID
 
 object IsUUID:
-  
+
   def apply[A: IsUUID]: IsUUID[A] = summon[IsUUID[A]]
 
   given IsUUID[UUID] with

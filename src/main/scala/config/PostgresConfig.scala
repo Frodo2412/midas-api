@@ -1,12 +1,13 @@
 package com.principate.midas
 package config
 
-import config.PostgresConfig.*
-import lib.newtypes.NewType
-
 import cats.effect.Async
 import cats.syntax.all.*
-import ciris.{ConfigValue, Effect}
+import ciris.ConfigValue
+import ciris.Effect
+
+import config.PostgresConfig.*
+import lib.newtypes.NewType
 
 case class PostgresConfig(
     host: DatabaseHost,

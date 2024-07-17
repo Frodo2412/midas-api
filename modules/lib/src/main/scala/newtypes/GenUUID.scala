@@ -4,7 +4,7 @@ package newtypes
 import cats.effect.Sync
 import cats.syntax.all.*
 
-import java.util.UUID 
+import java.util.UUID
 
 trait GenUUID[F[_]]:
 

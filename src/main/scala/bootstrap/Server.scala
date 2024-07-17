@@ -1,8 +1,10 @@
 package com.principate.midas
 package bootstrap
 
-import cats.effect.{Async, Resource}
-import com.comcast.ip4s.{host, port}
+import cats.effect.Async
+import cats.effect.Resource
+import com.comcast.ip4s.host
+import com.comcast.ip4s.port
 import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Server
@@ -21,5 +23,5 @@ object Server:
       .withHttpApp(routes.orNotFound)
       .build
       .evalTap(_ => Scribe[F].info(s"Its alive at $host:$port"))
-    
+
 end Server

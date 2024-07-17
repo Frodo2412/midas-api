@@ -1,9 +1,10 @@
 package com.principate.midas
 package bootstrap
 
-import config.PostgresConfig.*
-
-import cats.effect.{Async, MonadCancelThrow, Resource, Sync}
+import cats.effect.Async
+import cats.effect.MonadCancelThrow
+import cats.effect.Resource
+import cats.effect.Sync
 import cats.effect.std.Console
 import cats.syntax.all.*
 import fs2.io.net.Network
@@ -13,6 +14,8 @@ import scribe.Scribe
 import skunk.Session
 import skunk.codec.all.text
 import skunk.implicits.sql
+
+import config.PostgresConfig.*
 
 object Database:
 

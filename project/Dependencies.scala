@@ -95,6 +95,13 @@ object Dependencies {
       "org.testcontainers" % "postgresql" % testContainersVersion % Test
   }
 
+  object Tsec {
+    private val tsecVersion = "0.5.0"
+
+    val common   = "io.github.jmcardon" %% "tsec-common"   % tsecVersion
+    val password = "io.github.jmcardon" %% "tsec-password" % tsecVersion
+  }
+
   object Weaver {
     private val weaverVersion = "0.8.4"
 

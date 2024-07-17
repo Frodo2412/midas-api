@@ -17,7 +17,7 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % "1.10.13"
     )
   )
-  .dependsOn(lib)
+  .dependsOn(lib, security)
   .aggregate(lib, security)
 
 lazy val security = (project in file("domains/security"))
@@ -27,7 +27,10 @@ lazy val security = (project in file("domains/security"))
     libraryDependencies ++= Dependencies.common ++ Seq(
       "com.softwaremill.sttp.tapir" %% "tapir-core"          % "1.10.13",
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"    % "1.10.13",
-      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13"
+      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13",
+      "com.outr"                    %% "scalapass"           % "1.2.8",
+      Dependencies.Tsec.common,
+      Dependencies.Tsec.password
     )
   )
   .dependsOn(lib)
