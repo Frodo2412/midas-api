@@ -1,21 +1,21 @@
 package com.principate.midas
 package security
 
+import com.principate.midas.lib.newtypes.GenUUID
+import com.principate.midas.security.SecurityRoutes.UserNotFound
+import com.principate.midas.security.algebras.Users.CreateUserError
+import com.principate.midas.security.algebras.Users.CreateUserError.EmailAlreadyInUse
+import com.principate.midas.security.algebras.*
+import com.principate.midas.security.interpreters.SkunkUsersInterpreter
+import com.principate.midas.security.interpreters.TsecCryptInterpreter
+import com.principate.midas.security.models.*
+import com.principate.midas.security.programs.CreateUser
+
+import cats.MonadThrow
 import cats.effect.Resource
 import cats.effect.kernel.Sync
 import cats.effect.std.Random
 import cats.syntax.all.*
-import cats.{Monad, MonadError, MonadThrow}
-import com.principate.midas.lib.newtypes.GenUUID
-import com.principate.midas.security.SecurityRoutes.UserNotFound
-import com.principate.midas.security.algebras.*
-import com.principate.midas.security.algebras.Users.CreateUserError
-import com.principate.midas.security.interpreters.{
-  SkunkUsersInterpreter,
-  TsecCryptInterpreter
-}
-import com.principate.midas.security.models.*
-import com.principate.midas.security.programs.CreateUser
 import io.circe.generic.auto.*
 import scribe.Scribe
 import skunk.Session
@@ -38,7 +38,13 @@ final class SecurityRoutes[F[_]: MonadThrow: Scribe] private (
       .in("users")
       .in(jsonBody[RegistrationForm])
       .out(jsonBody[User])
-      .errorOut(jsonBody[CreateUserError])
+      .errorOut(
+        oneOf[CreateUserError](
+          oneOfVariant(
+            statusCode(StatusCode.Conflict) and jsonBody[EmailAlreadyInUse]
+          )
+        )
+      )
       .serverLogic(CreateUser[F](users, crypt).apply)
 
   private val getUser =
@@ -48,11 +54,7 @@ final class SecurityRoutes[F[_]: MonadThrow: Scribe] private (
       .out(jsonBody[User])
       .errorOut(statusCode(StatusCode.NotFound) and jsonBody[UserNotFound])
       .serverLogic: id =>
-        users
-          .find(id)
-          .map(_.toRight(UserNotFound(id)))
-          .onError:
-            case err => Scribe[F].error(err.getMessage)
+        users.find(id).map(_.toRight(UserNotFound(id)))
 
   val routes: List[ServerEndpoint[Fs2Streams[F], F]] = List(createUser, getUser)
 

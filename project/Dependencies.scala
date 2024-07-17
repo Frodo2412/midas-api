@@ -30,7 +30,7 @@ object Dependencies {
   }
 
   object Flyway {
-    val flywayVersion = "10.15.0"
+    val flywayVersion = "10.15.2"
 
     val core             = "org.flywaydb" % "flyway-core" % flywayVersion
     val databasePostgres =
@@ -75,9 +75,9 @@ object Dependencies {
   object Scribe {
     private val scribeVersion = "3.15.0"
 
-    val core = "com.outr" %% "scribe"      % scribeVersion
-    val cats = "com.outr" %% "scribe-cats" % scribeVersion
-    //  "com.outr"            %% "scribe-slf4j18"             % "3.15.0",
+    val core = "com.outr" %% "scribe"       % scribeVersion
+    val cats = "com.outr" %% "scribe-cats"  % scribeVersion
+    val sl4j = "com.outr" %% "scribe-slf4j" % scribeVersion
   }
 
   object Skunk {
@@ -124,6 +124,7 @@ object Dependencies {
     Postgres.dep,
     Scribe.core,
     Scribe.cats,
+    Scribe.sl4j,
     Skunk.core,
     TestContainers.core,
     TestContainers.postgres,

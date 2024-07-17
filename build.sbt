@@ -28,7 +28,6 @@ lazy val security = (project in file("domains/security"))
       "com.softwaremill.sttp.tapir" %% "tapir-core"          % "1.10.13",
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"    % "1.10.13",
       "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13",
-      "com.outr"                    %% "scalapass"           % "1.2.8",
       Dependencies.Tsec.common,
       Dependencies.Tsec.password
     )
