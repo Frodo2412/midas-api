@@ -6,8 +6,10 @@ import com.principate.midas.security.SecurityRoutes.UserNotFound
 import com.principate.midas.security.algebras.Users.CreateUserError
 import com.principate.midas.security.algebras.Users.CreateUserError.EmailAlreadyInUse
 import com.principate.midas.security.algebras.*
+import com.principate.midas.security.instances.validators.given
 import com.principate.midas.security.interpreters.SkunkUsersInterpreter
 import com.principate.midas.security.interpreters.TsecCryptInterpreter
+import com.principate.midas.security.model.UserId
 import com.principate.midas.security.models.*
 import com.principate.midas.security.programs.CreateUser
 
@@ -25,8 +27,6 @@ import sttp.tapir.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.server.ServerEndpoint
-
-import java.util.UUID
 
 final class SecurityRoutes[F[_]: MonadThrow: Scribe] private (
     users: Users[F],
@@ -50,7 +50,7 @@ final class SecurityRoutes[F[_]: MonadThrow: Scribe] private (
   private val getUser =
     endpoint.get
       .in("users")
-      .in(query[UUID]("userId"))
+      .in(query[UserId]("userId"))
       .out(jsonBody[User])
       .errorOut(statusCode(StatusCode.NotFound) and jsonBody[UserNotFound])
       .serverLogic: id =>
@@ -69,6 +69,6 @@ object SecurityRoutes:
     val crypt = TsecCryptInterpreter[F]
     new SecurityRoutes(users, crypt)
 
-  case class UserNotFound(userId: UUID)
+  case class UserNotFound(userId: UserId)
 
 end SecurityRoutes

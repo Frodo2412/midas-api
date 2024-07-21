@@ -3,8 +3,10 @@ package models
 
 import java.util.UUID
 
+import model.UserId
+
 final case class User(
-    id: UUID,
+    id: UserId,
     email: String,
     firstName: String,
     lastName: String

@@ -19,6 +19,8 @@ import java.util.UUID
 
 import algebras.Users
 import algebras.Users.CreateUserError.EmailAlreadyInUse
+import instances.codecs.userId
+import model.UserId
 import models.User
 
 final class SkunkUsersInterpreter[F[_]: MonadCancelThrow: GenUUID: Scribe](
@@ -38,7 +40,7 @@ final class SkunkUsersInterpreter[F[_]: MonadCancelThrow: GenUUID: Scribe](
       .use: session =>
         for
           cmd <- session.prepare(CreateUserCommand)
-          id  <- GenUUID[F].make[UUID]
+          id  <- GenUUID[F].make[UserId]
           _   <- cmd.execute(id, email, firstName, lastName, passwordHash)
         yield Right(User(id, email, firstName, lastName))
       .recoverWith:
@@ -46,7 +48,7 @@ final class SkunkUsersInterpreter[F[_]: MonadCancelThrow: GenUUID: Scribe](
             if ex.constraintName.contains("users_email_key") =>
           MonadCancelThrow[F].pure(Left(EmailAlreadyInUse(email)))
 
-  override def find(userId: UUID): F[Option[User]] =
+  override def find(userId: UserId): F[Option[User]] =
     Scribe[F].trace(s"Fetching user with id: $userId") *>
       sessionPool.use: session =>
         for
@@ -59,16 +61,16 @@ end SkunkUsersInterpreter
 object SkunkUsersInterpreter:
 
   private val CreateUserCommand
-      : Command[(UUID, String, String, String, String)] =
+      : Command[(UserId, String, String, String, String)] =
     sql"""INSERT INTO users
-            VALUES ($uuid, $text, $text, $text, $text);
+            VALUES ($userId, $text, $text, $text, $text);
             """.command
 
-  private val ReadUserQuery: Query[UUID, User] =
+  private val ReadUserQuery: Query[UserId, User] =
     sql"""SELECT id, email, first_name, last_name
          FROM users
-         WHERE id=$uuid;"""
-      .query(uuid *: text *: text *: text)
+         WHERE id=$userId;"""
+      .query(userId *: text *: text *: text)
       .to[User]
 
 end SkunkUsersInterpreter

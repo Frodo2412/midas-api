@@ -1,6 +1,8 @@
 package com.principate.midas.security
 package algebras
 
+import com.principate.midas.security.model.UserId
+
 import java.util.UUID
 
 import scala.util.control.NoStackTrace
@@ -17,7 +19,7 @@ trait Users[F[_]]:
       passwordHash: String
   ): F[Either[CreateUserError, User]]
 
-  def find(userId: UUID): F[Option[User]]
+  def find(userId: UserId): F[Option[User]]
 
 end Users
 

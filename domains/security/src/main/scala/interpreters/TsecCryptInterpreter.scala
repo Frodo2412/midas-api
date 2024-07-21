@@ -11,11 +11,7 @@ import algebras.Crypt
 final class TsecCryptInterpreter[F[_]: Sync: Random] extends Crypt[F]:
 
   override def hash(password: String): F[String] =
-    for
-      rounds <- genRounds
-      hash   <- BCrypt.hashpwWithRounds(password, rounds)
+    for hash <- BCrypt.hashpw[F](password)
     yield hash
-
-  private val genRounds = Random[F].betweenInt(10, 30)
 
 end TsecCryptInterpreter
