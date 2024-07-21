@@ -1,10 +1,9 @@
 package com.principate.midas
 package bootstrap
 
-import cats.effect.Async
-import cats.effect.MonadCancelThrow
-import cats.effect.Resource
-import cats.effect.Sync
+import config.PostgresConfig.*
+
+import cats.effect.{Async, MonadCancelThrow, Resource, Sync}
 import cats.effect.std.Console
 import cats.syntax.all.*
 import fs2.io.net.Network
@@ -15,8 +14,6 @@ import skunk.Session
 import skunk.codec.all.text
 import skunk.implicits.sql
 
-import config.PostgresConfig.*
-
 object Database:
 
   def connect[F[_]: Async: Trace: Network: Console: Scribe](
@@ -24,7 +21,7 @@ object Database:
       port: DatabasePort,
       name: DatabaseName,
       user: DatabaseUser,
-      password: Option[DatabasePassword]
+      password: DatabasePassword
   ): Resource[F, Resource[F, Session[F]]] =
     Resource.eval(
       migrate(
@@ -32,14 +29,14 @@ object Database:
         port,
         name,
         user,
-        password.getOrElse(DatabasePassword(""))
+        password
       )
     ) *> (Session.pooled[F](
-      host.value,
-      port.value,
-      user.value,
-      name.value,
-      password.map(_.value),
+      host,
+      port,
+      user,
+      name,
+      Some(password),
       5
     ) evalTap checkConnection)
 
@@ -72,17 +69,15 @@ object Database:
           .map(
             _.dataSource(
               url(dbHost, dbPort, dbName),
-              dbUser.value,
-              dbPassword.value
+              dbUser,
+              dbPassword
             )
           )
           .map(_.load())
       result <- Sync[F] blocking flyway.migrate()
-      _      <- if result.success then Scribe[F] info result.toString
-                else
-                  Sync[F] raiseError new Exception(
-                    s"Failed to run migrations: ${result.warnings}"
-                  )
+      _      <- Sync[F].raiseWhen(!result.success)(
+                  new Exception(s"Failed to run migrations: ${result.warnings}")
+                )
     yield ()
 
 end Database

@@ -29,18 +29,17 @@ object Main extends ResourceApp.Forever:
     configs.flatMap:
       case AppConfig(postgres) =>
         for
-          entryPoint       <- tracer
-          given Random[IO] <- secureRandom
-          given Trace[IO]  <- Resource eval ioTraceForEntryPoint(entryPoint)
-          postgres         <- Database.connect[IO](
-                                postgres.host,
-                                postgres.port,
-                                postgres.name,
-                                postgres.user,
-                                Some(postgres.password)
-                              )
-          apiRoutes         = Api[IO](postgres).routes
-          _                <- Server.start[IO](apiRoutes)
+          entryPoint      <- tracer
+          given Trace[IO] <- Resource eval ioTraceForEntryPoint(entryPoint)
+          postgres        <- Database.connect[IO](
+                               postgres.host,
+                               postgres.port,
+                               postgres.name,
+                               postgres.user,
+                               postgres.password.value
+                             )
+          apiRoutes        = Api[IO](postgres).routes
+          _               <- Server.start[IO](apiRoutes)
         yield ()
 
   private val configs: Resource[IO, AppConfig] = Resource eval AppConfig[IO]

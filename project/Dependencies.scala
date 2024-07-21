@@ -49,6 +49,7 @@ object Dependencies {
     val core  = "io.github.iltotore" %% "iron"       % ironVersion
     val cats  = "io.github.iltotore" %% "iron-cats"  % ironVersion
     val circe = "io.github.iltotore" %% "iron-circe" % ironVersion
+    val ciris = "io.github.iltotore" %% "iron-ciris" % ironVersion
     val skunk = "io.github.iltotore" %% "iron-skunk" % ironVersion
   }
 
@@ -111,6 +112,7 @@ object Dependencies {
   }
 
   val common: Seq[ModuleID] = Seq(
+    CatsEffect.dep,
     CatsMtl.dep,
     Circe.core,
     Circe.generic,
@@ -119,6 +121,13 @@ object Dependencies {
     Flyway.core,
     Flyway.databasePostgres,
     Http4s.emberServer,
+    Iron.core,
+    Iron.cats,
+    Iron.circe,
+    Iron.ciris,
+    Iron.skunk,
+    Monocle.core,
+    Monocle.`macro`,
     Natchez.core,
     Natchez.jaeger,
     Postgres.dep,
@@ -128,6 +137,8 @@ object Dependencies {
     Skunk.core,
     TestContainers.core,
     TestContainers.postgres,
+    Tsec.common,
+    Tsec.password,
     Weaver.cats,
     Weaver.scalacheck
   )

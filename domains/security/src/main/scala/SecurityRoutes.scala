@@ -63,7 +63,7 @@ end SecurityRoutes
 
 object SecurityRoutes:
 
-  def apply[F[_]: Sync: Scribe: Random](
+  def apply[F[_]: Sync: Scribe](
       sessionPool: Resource[F, Session[F]]
   ): SecurityRoutes[F] =
     val users = SkunkUsersInterpreter[F](sessionPool)
