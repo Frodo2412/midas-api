@@ -1,6 +1,9 @@
 package com.principate.midas.security
 package interpreters
 
+import algebras.Crypt
+import model.*
+
 import cats.effect.Sync
 import cats.effect.std.Random
 import cats.syntax.all.*
