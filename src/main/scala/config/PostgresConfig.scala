@@ -1,15 +1,16 @@
 package com.principate.midas
 package config
 
-import config.PostgresConfig.*
-
 import cats.effect.Async
 import cats.syntax.all.*
 import ciris.*
+import io.github.iltotore.iron.Not
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.ciris.given
 import io.github.iltotore.iron.constraint.all.*
-import io.github.iltotore.iron.{Not, *}
+
+import config.PostgresConfig.*
 
 case class PostgresConfig(
     host: DatabaseHost,
