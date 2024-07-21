@@ -17,8 +17,8 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % "1.10.13"
     )
   )
-  .dependsOn(lib, security)
-  .aggregate(lib, security)
+  .dependsOn(security)
+  .aggregate(security)
 
 lazy val security = (project in file("domains/security"))
   .settings(
@@ -29,29 +29,5 @@ lazy val security = (project in file("domains/security"))
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"    % "1.10.14",
       "com.softwaremill.sttp.tapir" %% "tapir-iron"          % "1.10.14",
       "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13",
-      Dependencies.Tsec.common,
-      Dependencies.Tsec.password,
-      Dependencies.CatsEffect.dep,
-      Dependencies.Iron.core,
-      Dependencies.Iron.cats,
-      Dependencies.Iron.circe,
-      Dependencies.Iron.skunk,
-      Dependencies.Monocle.core,
-      Dependencies.Monocle.`macro`
-    )
-  )
-
-lazy val lib = (project in file("modules/lib"))
-  .settings(
-    name             := "lib",
-    idePackagePrefix := Some("com.principate.midas.lib"),
-    libraryDependencies ++= Seq(
-      Dependencies.CatsEffect.dep,
-      Dependencies.Iron.core,
-      Dependencies.Iron.cats,
-      Dependencies.Iron.circe,
-      Dependencies.Iron.skunk,
-      Dependencies.Monocle.core,
-      Dependencies.Monocle.`macro`
     )
   )

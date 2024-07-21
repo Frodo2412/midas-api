@@ -16,7 +16,7 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 
 import security.SecurityRoutes
 
-class Api[F[_]: Async: Random: Scribe](sessionPool: Resource[F, Session[F]]):
+class Api[F[_]: Async: Scribe](sessionPool: Resource[F, Session[F]]):
 
   private val healthEndpoint: ServerEndpoint[Any, F] =
     endpoint.get

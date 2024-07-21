@@ -3,18 +3,21 @@ package config
 
 import cats.effect.Async
 import cats.syntax.all.*
-import ciris.ConfigValue
-import ciris.Effect
+import ciris.*
+import io.github.iltotore.iron.Not
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.cats.given
+import io.github.iltotore.iron.ciris.given
+import io.github.iltotore.iron.constraint.all.*
 
 import config.PostgresConfig.*
-import lib.newtypes.NewType
 
 case class PostgresConfig(
     host: DatabaseHost,
     port: DatabasePort,
     name: DatabaseName,
     user: DatabaseUser,
-    password: DatabasePassword
+    password: Secret[DatabasePassword]
 )
 
 object PostgresConfig:
@@ -29,48 +32,33 @@ object PostgresConfig:
     ).mapN(PostgresConfig.apply).load[F]
 
   private def host: ConfigValue[Effect, DatabaseHost] =
-    ciris.env("DATABASE_HOST").default("localhost").map(DatabaseHost.apply)
+    env("DATABASE_HOST").as[DatabaseHost].default("localhost")
 
   private def port: ConfigValue[Effect, DatabasePort] =
-    ciris
-      .env("DATABASE_PORT")
-      .map(_.toInt)
-      .default(5432)
-      .map(DatabasePort.apply)
+    env("DATABASE_PORT").as[DatabasePort].default(5432)
 
   private def name: ConfigValue[Effect, DatabaseName] =
-    ciris
-      .env("DATABASE_NAME")
-      .default("midas")
-      .map(DatabaseName.apply)
+    env("DATABASE_NAME").as[DatabaseName].default("midas")
 
   private def user: ConfigValue[Effect, DatabaseUser] =
-    ciris
-      .env("DATABASE_USER")
-      .default("user")
-      .map(DatabaseUser.apply)
+    env("DATABASE_USER").as[DatabaseUser].default("user")
 
-  private def password: ConfigValue[Effect, DatabasePassword] =
-    ciris
-      .env("DATABASE_PASSWORD")
-      .default("password")
-      .secret
-      .map(_.value)
-      .map(DatabasePassword.apply)
+  private def password: ConfigValue[Effect, Secret[DatabasePassword]] =
+    env("DATABASE_PASSWORD").as[DatabasePassword].default("password").secret
 
-  type DatabaseHost = DatabaseHost.T
-  object DatabaseHost extends NewType[String]
+  type DatabaseHost = String :| Not[Blank]
+  object DatabaseHost extends RefinedTypeOps.Transparent[DatabaseHost]
 
-  type DatabasePort = DatabasePort.T
-  object DatabasePort extends NewType[Int]
+  type DatabasePort = Int :| Positive
+  object DatabasePort extends RefinedTypeOps.Transparent[DatabasePort]
 
-  type DatabaseName = DatabaseName.T
-  object DatabaseName extends NewType[String]
+  type DatabaseName = String :| Not[Blank]
+  object DatabaseName extends RefinedTypeOps.Transparent[DatabaseName]
 
-  type DatabaseUser = DatabaseUser.T
-  object DatabaseUser extends NewType[String]
+  type DatabaseUser = String :| Not[Blank]
+  object DatabaseUser extends RefinedTypeOps.Transparent[DatabaseUser]
 
-  type DatabasePassword = DatabasePassword.T
-  object DatabasePassword extends NewType[String]
+  type DatabasePassword = String :| Not[Blank]
+  object DatabasePassword extends RefinedTypeOps.Transparent[DatabasePassword]
 
 end PostgresConfig
