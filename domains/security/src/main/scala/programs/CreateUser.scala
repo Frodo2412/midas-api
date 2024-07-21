@@ -6,7 +6,7 @@ import cats.syntax.all.*
 
 import algebras.Users.CreateUserError
 import algebras.{Crypt, Users}
-import models.{RegistrationForm, User}
+import model.{RegistrationForm, User}
 
 final class CreateUser[F[_]: Monad](users: Users[F], crypt: Crypt[F]):
 

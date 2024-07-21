@@ -1,16 +1,13 @@
 package com.principate.midas
 package security
 
-import com.principate.midas.lib.newtypes.GenUUID
 import com.principate.midas.security.SecurityRoutes.UserNotFound
 import com.principate.midas.security.algebras.Users.CreateUserError
 import com.principate.midas.security.algebras.Users.CreateUserError.EmailAlreadyInUse
 import com.principate.midas.security.algebras.*
-import com.principate.midas.security.instances.validators.given
 import com.principate.midas.security.interpreters.SkunkUsersInterpreter
 import com.principate.midas.security.interpreters.TsecCryptInterpreter
-import com.principate.midas.security.model.UserId
-import com.principate.midas.security.models.*
+import com.principate.midas.security.model.*
 import com.principate.midas.security.programs.CreateUser
 
 import cats.MonadThrow
@@ -19,11 +16,15 @@ import cats.effect.kernel.Sync
 import cats.effect.std.Random
 import cats.syntax.all.*
 import io.circe.generic.auto.*
+import io.github.iltotore.iron.circe.given
+import io.github.iltotore.iron.constraint.all.*
 import scribe.Scribe
 import skunk.Session
 import sttp.capabilities.fs2.Fs2Streams
 import sttp.model.StatusCode
+import sttp.tapir.Codec.*
 import sttp.tapir.*
+import sttp.tapir.codec.iron.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.jsonBody
 import sttp.tapir.server.ServerEndpoint
@@ -31,7 +32,7 @@ import sttp.tapir.server.ServerEndpoint
 final class SecurityRoutes[F[_]: MonadThrow: Scribe] private (
     users: Users[F],
     crypt: Crypt[F]
-):
+) extends sttp.tapir.codec.iron.TapirCodecIron:
 
   private val createUser =
     endpoint.post
@@ -62,7 +63,7 @@ end SecurityRoutes
 
 object SecurityRoutes:
 
-  def apply[F[_]: Sync: GenUUID: Scribe: Random](
+  def apply[F[_]: Sync: Scribe: Random](
       sessionPool: Resource[F, Session[F]]
   ): SecurityRoutes[F] =
     val users = SkunkUsersInterpreter[F](sessionPool)

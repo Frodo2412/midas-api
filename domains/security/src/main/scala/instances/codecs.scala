@@ -1,13 +1,18 @@
 package com.principate.midas.security
 package instances
 
-import skunk.Codec
-import skunk.codec.AllCodecs
+import io.github.iltotore.iron.skunk.*
+import skunk.*
+import skunk.codec.all.*
 
-import model.UserId
+import model.*
 
-object codecs extends AllCodecs:
+object codecs:
 
-  val userId: Codec[UserId] = uuid.imap(UserId.apply)(_.value)
+  val userId: Codec[UserId]             = uuid.refined
+  val email: Codec[Email]               = text.refined
+  val firstName: Codec[FirstName]       = text.refined
+  val lastName: Codec[LastName]         = text.refined
+  val passwordHash: Codec[PasswordHash] = text.refined
 
 end codecs
