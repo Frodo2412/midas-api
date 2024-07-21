@@ -1,13 +1,13 @@
 package com.principate.midas.security
 package interpreters
 
-import algebras.Crypt
-import model.*
-
 import cats.effect.Sync
 import cats.effect.std.Random
 import cats.syntax.all.*
 import tsec.passwordhashers.jca.BCrypt
+
+import algebras.Crypt
+import model.*
 
 final class TsecCryptInterpreter[F[_]: Sync: Random] extends Crypt[F]:
 
