@@ -30,10 +30,16 @@ lazy val security = (project in file("domains/security"))
       "com.softwaremill.sttp.tapir" %% "tapir-iron"          % "1.10.14",
       "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "1.10.13",
       Dependencies.Tsec.common,
-      Dependencies.Tsec.password
+      Dependencies.Tsec.password,
+      Dependencies.CatsEffect.dep,
+      Dependencies.Iron.core,
+      Dependencies.Iron.cats,
+      Dependencies.Iron.circe,
+      Dependencies.Iron.skunk,
+      Dependencies.Monocle.core,
+      Dependencies.Monocle.`macro`
     )
   )
-  .dependsOn(lib)
 
 lazy val lib = (project in file("modules/lib"))
   .settings(

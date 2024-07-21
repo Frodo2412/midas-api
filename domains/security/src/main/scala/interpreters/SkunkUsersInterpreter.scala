@@ -1,38 +1,34 @@
 package com.principate.midas.security
 package interpreters
 
-import com.principate.midas.lib.newtypes.GenUUID
-
 import cats.effect.MonadCancelThrow
 import cats.effect.Resource
+import cats.effect.kernel.Sync
 import cats.syntax.all.*
 import scribe.Scribe
 import skunk.Command
 import skunk.Query
 import skunk.Session
 import skunk.SqlState
-import skunk.codec.all.uuid
-import skunk.codec.text.*
 import skunk.implicits.sql
 
 import java.util.UUID
 
 import algebras.Users
 import algebras.Users.CreateUserError.EmailAlreadyInUse
-import instances.codecs.userId
-import model.UserId
-import models.User
+import instances.codecs.*
+import model.*
 
-final class SkunkUsersInterpreter[F[_]: MonadCancelThrow: GenUUID: Scribe](
+final class SkunkUsersInterpreter[F[_]: Sync: Scribe](
     sessionPool: Resource[F, Session[F]]
 ) extends Users[F]:
   import SkunkUsersInterpreter.*
 
   override def create(
-      email: String,
-      firstName: String,
-      lastName: String,
-      passwordHash: String
+      email: Email,
+      firstName: FirstName,
+      lastName: LastName,
+      passwordHash: PasswordHash
   ): F[Either[Users.CreateUserError, User]] =
     Scribe[F].trace(
       s"Creating user: { email: $email, firstName: $firstName, lastName: $lastName }"
@@ -40,7 +36,7 @@ final class SkunkUsersInterpreter[F[_]: MonadCancelThrow: GenUUID: Scribe](
       .use: session =>
         for
           cmd <- session.prepare(CreateUserCommand)
-          id  <- GenUUID[F].make[UserId]
+          id  <- UserId.random[F]
           _   <- cmd.execute(id, email, firstName, lastName, passwordHash)
         yield Right(User(id, email, firstName, lastName))
       .recoverWith:
@@ -61,16 +57,16 @@ end SkunkUsersInterpreter
 object SkunkUsersInterpreter:
 
   private val CreateUserCommand
-      : Command[(UserId, String, String, String, String)] =
+      : Command[(UserId, Email, FirstName, LastName, PasswordHash)] =
     sql"""INSERT INTO users
-            VALUES ($userId, $text, $text, $text, $text);
+            VALUES ($userId, $email, $firstName, $lastName, $passwordHash);
             """.command
 
   private val ReadUserQuery: Query[UserId, User] =
     sql"""SELECT id, email, first_name, last_name
          FROM users
          WHERE id=$userId;"""
-      .query(userId *: text *: text *: text)
+      .query(userId *: email *: firstName *: lastName)
       .to[User]
 
 end SkunkUsersInterpreter

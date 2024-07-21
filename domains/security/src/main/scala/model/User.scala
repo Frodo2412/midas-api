@@ -1,13 +1,11 @@
 package com.principate.midas.security
-package models
-
-import java.util.UUID
+package model
 
 import model.UserId
 
 final case class User(
     id: UserId,
-    email: String,
-    firstName: String,
-    lastName: String
+    email: Email,
+    firstName: FirstName,
+    lastName: LastName
 )

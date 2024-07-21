@@ -1,22 +1,18 @@
 package com.principate.midas.security
 package algebras
 
-import com.principate.midas.security.model.UserId
-
-import java.util.UUID
-
 import scala.util.control.NoStackTrace
 
 import algebras.Users.CreateUserError
-import models.User
+import model.*
 
 trait Users[F[_]]:
 
   def create(
-      email: String,
-      firstName: String,
-      lastName: String,
-      passwordHash: String
+      email: Email,
+      firstName: FirstName,
+      lastName: LastName,
+      passwordHash: PasswordHash
   ): F[Either[CreateUserError, User]]
 
   def find(userId: UserId): F[Option[User]]
